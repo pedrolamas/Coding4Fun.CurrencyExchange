@@ -1,0 +1,74 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="Coding4Fun.CurrencyExchange.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:c4f="clr-namespace:Coding4Fun.Controls;assembly=Coding4Fun.Controls"
+    xmlns:helpers="clr-namespace:Coding4Fun.CurrencyExchange.Helpers"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="False"
+    helpers:AutoSelect.AutoSelectText="True"
+    BindingValidationError="PhoneApplicationPage_BindingValidationError">
+    <phone:PhoneApplicationPage.Resources>
+        <Style x:Key="CurrencyListPicker" TargetType="toolkit:ListPicker">
+            <Setter Property="DisplayMemberPath" Value="Name" />
+            <Setter Property="CacheMode" Value="BitmapCache" />
+            <Setter Property="FullModeItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="16 21 0 20">
+                            <TextBlock Text="{Binding Name}" FontSize="43" FontFamily="{StaticResource PhoneFontFamilyLight}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </phone:PhoneApplicationPage.Resources>
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,15">
+            <TextBlock Text="{StaticResource ApplicationTitle}" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock Text="{StaticResource PageTitle}" Margin="9,-20,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0">
+            <TextBlock Margin="12,0,0,-5" Style="{StaticResource PhoneTextSubtleStyle}">Amount</TextBlock>
+            <TextBox InputScope="TelephoneNumber" Text="{Binding Amount, Mode=TwoWay, ValidatesOnExceptions=True, NotifyOnValidationError=True}" />
+            <TextBlock Margin="12,10,0,-5" Style="{StaticResource PhoneTextSubtleStyle}">From</TextBlock>
+            <toolkit:ListPicker ItemsSource="{Binding Currencies}" SelectedItem="{Binding FromCurrency, Mode=TwoWay}" FullModeHeader="FROM CURRENCY" Style="{StaticResource CurrencyListPicker}" />
+            <TextBlock Margin="12,10,0,-5" Style="{StaticResource PhoneTextSubtleStyle}">To</TextBlock>
+            <toolkit:ListPicker ItemsSource="{Binding Currencies}" SelectedItem="{Binding ToCurrency, Mode=TwoWay}" FullModeHeader="TO CURRENCY" Style="{StaticResource CurrencyListPicker}" />
+            <StackPanel>
+                <TextBlock Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="{Binding ExchangedCurrency}"></TextBlock>
+                <TextBlock Margin="25, 0, 0, 0" Style="{StaticResource PhoneTextTitle1Style}" Text="{Binding ExchangedAmount}"></TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+
+    <!--Sample code showing usage of ApplicationBar-->
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar.money.usd.png" Text="Exchange" Click="ExchangeIconButton_Click" />
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="about" Click="AboutMenuItem_Click" />
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
+</phone:PhoneApplicationPage>
