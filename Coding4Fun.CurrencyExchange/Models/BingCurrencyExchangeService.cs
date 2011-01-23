@@ -10,7 +10,7 @@ namespace Coding4Fun.CurrencyExchange.Model
     {
         #region Static Globals
 
-        private static Regex _resultRegex = new Regex("<span class=\"sc_bigLine\">.*? = (?<value>[0-9.,]+).*?</span>");
+        private static Regex _resultRegex = new Regex("<span class=\"sc_bigLine\">.*?=(&nbsp;| )(?<value>[0-9.,]+).*?</span>");
 
         private static ICurrency[] _currencies = new ICurrency[] { 
             new BingCurrency("Algerian Dinar"),
