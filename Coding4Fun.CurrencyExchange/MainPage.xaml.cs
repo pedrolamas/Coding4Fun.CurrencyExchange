@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Coding4Fun.CurrencyExchange.Helpers;
 using Coding4Fun.CurrencyExchange.Model;
 using Coding4Fun.CurrencyExchange.ViewModels;
+using Coding4Fun.Phone.Site.Controls;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Net.NetworkInformation;
 using NetworkInterface = System.Net.NetworkInformation.NetworkInterface;
@@ -25,6 +26,13 @@ namespace Coding4Fun.CurrencyExchange
             InitializeComponent();
 
             this.DataContext = MainViewModel.Instance;
+            MainViewModel.Instance.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Instance_PropertyChanged);
+        }
+
+        void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "ExchangedAmount")
+                progressOverlay.Hide();
         }
 
         private void PhoneApplicationPage_BindingValidationError(object sender, ValidationErrorEventArgs e)
@@ -43,9 +51,10 @@ namespace Coding4Fun.CurrencyExchange
                 return;
 
 			Focus();
-
+            
 			Dispatcher.BeginInvoke(() =>
 									{
+                                        progressOverlay.Show();
 										viewModel.Save();
 
 										if (!NetworkInterface.GetIsNetworkAvailable())
@@ -55,12 +64,14 @@ namespace Coding4Fun.CurrencyExchange
 										}
 
 										viewModel.ExchangeCurrency();
+                                        
 									});
         }
 
         private void AboutMenuItem_Click(object sender, EventArgs e)
         {
-            Controls.About.Show("Pedro Lamas", "pedrolamas", "pedrolamas@gmail.com", "http://www.pedrolamas.com", this, LayoutRoot);
+            var about = new Coding4FunAboutPrompt();
+            about.Show("Pedro Lamas", "pedrolamas", "pedrolamas@gmail.com", "http://www.pedrolamas.com");
         }
     }
 }
