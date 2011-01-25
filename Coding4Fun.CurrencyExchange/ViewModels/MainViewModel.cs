@@ -2,7 +2,8 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using Coding4Fun.Controls.Data;
+
+using Coding4Fun.CurrencyExchange.Helpers;
 using Coding4Fun.CurrencyExchange.Model;
 
 namespace Coding4Fun.CurrencyExchange.ViewModels

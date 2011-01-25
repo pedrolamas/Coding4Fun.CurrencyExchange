@@ -7,9 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    xmlns:c4f="clr-namespace:Coding4Fun.Controls;assembly=Coding4Fun.Controls"
-    xmlns:helpers="clr-namespace:Coding4Fun.CurrencyExchange.Helpers"
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728"
+    
+    xmlns:helpers="clr-namespace:Coding4Fun.CurrencyExchange.Helpers" xmlns:C4F="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls" mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -59,6 +58,14 @@
                 <TextBlock Margin="25, 0, 0, 0" Style="{StaticResource PhoneTextTitle1Style}" Text="{Binding ExchangedAmount}"></TextBlock>
             </StackPanel>
         </StackPanel>
+        <C4F:ProgressOverlay
+            Name="progressOverlay" 
+            Grid.Row="2"
+            Visibility="Collapsed">
+            <C4F:ProgressOverlay.Content>
+                <TextBlock>Loading</TextBlock>
+            </C4F:ProgressOverlay.Content>
+        </C4F:ProgressOverlay>
     </Grid>
 
     <!--Sample code showing usage of ApplicationBar-->

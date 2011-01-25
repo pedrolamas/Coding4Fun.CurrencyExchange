@@ -3,7 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{D3CDEBDC-0DCF-419B-A1B4-A5B300B0E942}"
 	ProjectSection(SolutionItems) = preProject
-		Lib\Coding4Fun.Controls.dll = Lib\Coding4Fun.Controls.dll
+		Lib\Coding4Fun.Phone.Controls.dll = Lib\Coding4Fun.Phone.Controls.dll
+		Lib\Coding4Fun.Phone.Site.Controls.dll = Lib\Coding4Fun.Phone.Site.Controls.dll
 		Lib\Microsoft.Phone.Controls.Toolkit.dll = Lib\Microsoft.Phone.Controls.Toolkit.dll
 	EndProjectSection
 EndProject
