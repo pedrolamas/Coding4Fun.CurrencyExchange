@@ -7,13 +7,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    
-    xmlns:helpers="clr-namespace:Coding4Fun.CurrencyExchange.Helpers" xmlns:C4F="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls" mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728"
+    xmlns:helpers="clr-namespace:Coding4Fun.CurrencyExchange.Helpers"
+    xmlns:C4F="clr-namespace:Coding4Fun.Phone.Controls;assembly=Coding4Fun.Phone.Controls"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     shell:SystemTray.IsVisible="False"
+    toolkit:TiltEffect.IsTiltEnabled="True"
     helpers:AutoSelect.AutoSelectText="True"
     BindingValidationError="PhoneApplicationPage_BindingValidationError">
     <phone:PhoneApplicationPage.Resources>
@@ -23,7 +25,7 @@
             <Setter Property="FullModeItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="16 21 0 20">
+                        <StackPanel Orientation="Horizontal" Margin="16,21,0,20">
                             <TextBlock Text="{Binding Name}" FontSize="43" FontFamily="{StaticResource PhoneFontFamilyLight}"/>
                         </StackPanel>
                     </DataTemplate>
@@ -40,13 +42,13 @@
         </Grid.RowDefinitions>
 
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,15">
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="{StaticResource ApplicationTitle}" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock Text="{StaticResource PageTitle}" Margin="9,-20,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Text="{StaticResource MainPageTitle}" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0">
+        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <TextBlock Margin="12,0,0,-5" Style="{StaticResource PhoneTextSubtleStyle}">Amount</TextBlock>
             <TextBox InputScope="TelephoneNumber" Text="{Binding Amount, Mode=TwoWay, ValidatesOnExceptions=True, NotifyOnValidationError=True}" />
             <TextBlock Margin="12,10,0,-5" Style="{StaticResource PhoneTextSubtleStyle}">From</TextBlock>
@@ -56,12 +58,12 @@
             <StackPanel>
                 <TextBlock Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="{Binding ExchangedCurrency}"></TextBlock>
                 <TextBlock Margin="25, 0, 0, 0" Style="{StaticResource PhoneTextTitle1Style}" Text="{Binding ExchangedAmount}"></TextBlock>
+                <TextBlock Style="{StaticResource PhoneTextSubtleStyle}" Text="{Binding ExchangedTimeStamp}" TextWrapping="Wrap"></TextBlock>
             </StackPanel>
         </StackPanel>
         <C4F:ProgressOverlay
-            Name="progressOverlay" 
             Grid.Row="2"
-            Visibility="Collapsed">
+            Visibility="{Binding BusyVisibility}">
             <C4F:ProgressOverlay.Content>
                 <TextBlock>Loading</TextBlock>
             </C4F:ProgressOverlay.Content>
@@ -73,6 +75,8 @@
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.money.usd.png" Text="Exchange" Click="ExchangeIconButton_Click" />
             <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="favorite currencies..." Click="EditFavoriteCurrenciesMenuItem_Click" />
+                <shell:ApplicationBarMenuItem Text="update exchange rates" Click="UpdateExchangeRatesMenuItem_Click" />
                 <shell:ApplicationBarMenuItem Text="about" Click="AboutMenuItem_Click" />
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>

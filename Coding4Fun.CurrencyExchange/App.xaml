@@ -10,7 +10,29 @@
     <!--Application Resources-->
     <Application.Resources>
         <system:String x:Key="ApplicationTitle">CURRENCY CONVERTER</system:String>
-        <system:String x:Key="PageTitle">convert</system:String>
+
+        <system:String x:Key="MainPageTitle">convert</system:String>
+
+        <system:String x:Key="FavoriteCurrenciesPageTitle">favorite currencies</system:String>
+
+        <Style x:Key="CheckBoxListBox" TargetType="ListBox">
+            <Setter Property="SelectionMode" Value="Multiple" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <CheckBox IsChecked="{Binding Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, Path=IsSelected}">
+                                        <ContentPresenter />
+                                    </CheckBox>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>

@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Coding4Fun.CurrencyExchange.Helpers;
-using Coding4Fun.CurrencyExchange.Model;
 using Coding4Fun.CurrencyExchange.ViewModels;
 using Coding4Fun.Phone.Site.Controls;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Net.NetworkInformation;
 using NetworkInterface = System.Net.NetworkInformation.NetworkInterface;
 
 namespace Coding4Fun.CurrencyExchange
@@ -26,13 +15,6 @@ namespace Coding4Fun.CurrencyExchange
             InitializeComponent();
 
             this.DataContext = MainViewModel.Instance;
-            MainViewModel.Instance.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Instance_PropertyChanged);
-        }
-
-        void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if(e.PropertyName == "ExchangedAmount")
-                progressOverlay.Hide();
         }
 
         private void PhoneApplicationPage_BindingValidationError(object sender, ValidationErrorEventArgs e)
@@ -50,27 +32,45 @@ namespace Coding4Fun.CurrencyExchange
             if (viewModel == null)
                 return;
 
-			Focus();
-            
-			Dispatcher.BeginInvoke(() =>
-									{
-                                        progressOverlay.Show();
-										viewModel.Save();
+            Focus();
 
-										if (!NetworkInterface.GetIsNetworkAvailable())
-										{
-											MessageBox.Show("No network connection found!", "Error", MessageBoxButton.OK);
-											return;
-										}
+            Dispatcher.BeginInvoke(() =>
+            {
+                viewModel.Save();
 
-										viewModel.ExchangeCurrency();
-                                        
-									});
+                if (!NetworkInterface.GetIsNetworkAvailable())
+                {
+                    MessageBox.Show("No network connection found!", "Error", MessageBoxButton.OK);
+
+                    return;
+                }
+
+                viewModel.ExchangeCurrency();
+            });
+        }
+
+        private void EditFavoriteCurrenciesMenuItem_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/FavoriteCurrenciesPage.xaml", UriKind.Relative));
+        }
+
+        private void UpdateExchangeRatesMenuItem_Click(object sender, EventArgs e)
+        {
+            var viewModel = DataContext as MainViewModel;
+
+            if (viewModel == null)
+                return;
+
+            Dispatcher.BeginInvoke(() =>
+            {
+                viewModel.UpdateCachedExchangeRates();
+            });
         }
 
         private void AboutMenuItem_Click(object sender, EventArgs e)
         {
             var about = new Coding4FunAboutPrompt();
+
             about.Show("Pedro Lamas", "pedrolamas", "pedrolamas@gmail.com", "http://www.pedrolamas.com");
         }
     }
