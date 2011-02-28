@@ -70,21 +70,28 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FavoriteCurrenciesPage.xaml.cs">
+      <DependentUpon>FavoriteCurrenciesPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\AutoSelect.cs" />
+    <Compile Include="Helpers\MultiselectorHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\BingCurrency.cs" />
     <Compile Include="Models\BingCurrencyExchangeService.cs" />
+    <Compile Include="Models\CachedExchangeRate.cs" />
     <Compile Include="Models\CurrencyExchangeResult.cs" />
     <Compile Include="Models\CurrencyExchangeServiceBase.cs" />
+    <Compile Include="Models\ICachedExchangeRate.cs" />
     <Compile Include="Models\ICurrency.cs" />
     <Compile Include="Models\ICurrencyExchangeResult.cs" />
     <Compile Include="Models\ICurrencyExchangeService.cs" />
     <Compile Include="Models\MsnMoneyCurrency.cs" />
     <Compile Include="Models\MsnMoneyCurrencyExchangeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\FavoriteCurrenciesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +99,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="FavoriteCurrenciesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -107,6 +118,12 @@
     </Content>
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\appbar.cancel.rest.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\appbar.check.rest.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\appbar.money.usd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

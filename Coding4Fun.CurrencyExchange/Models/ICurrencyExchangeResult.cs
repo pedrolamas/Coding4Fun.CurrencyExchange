@@ -6,8 +6,12 @@ namespace Coding4Fun.CurrencyExchange.Model
     {
         Exception Error { get; }
 
-        string ExchangedCurrency { get; }
+        ICurrency ExchangedCurrency { get; }
 
         double ExchangedAmount { get; }
+
+        DateTime Timestamp { get; }
+
+        object State { get; }
     }
 }

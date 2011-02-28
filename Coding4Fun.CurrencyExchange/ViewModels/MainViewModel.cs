@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
-
+using System.Windows;
 using Coding4Fun.CurrencyExchange.Helpers;
 using Coding4Fun.CurrencyExchange.Model;
 
@@ -52,6 +53,15 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             get
             {
                 return _currencyExchangeService.Currencies;
+            }
+        }
+
+        [IgnoreDataMember]
+        public Dictionary<ICurrency, ICachedExchangeRate> CachedExchangeRates
+        {
+            get
+            {
+                return _currencyExchangeService.CachedExchangeRates;
             }
         }
 
@@ -133,6 +143,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
                 RaisePropertyChanged("Result");
                 RaisePropertyChanged("ExchangedCurrency");
                 RaisePropertyChanged("ExchangedAmount");
+                RaisePropertyChanged("ExchangedTimeStamp");
             }
         }
 
@@ -144,7 +155,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
                 if (_result == null)
                     return string.Empty;
 
-                return _result.ExchangedCurrency;
+                return _result.ExchangedCurrency.Name;
             }
         }
 
@@ -157,6 +168,20 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
                     return string.Empty;
 
                 return _result.ExchangedAmount.ToString("N2");
+            }
+        }
+
+        [IgnoreDataMember]
+        public string ExchangedTimeStamp
+        {
+            get
+            {
+                if (_result == null)
+                    return string.Empty;
+
+                return string.Format("Data retrieved on {0}, at {1}",
+                    _result.Timestamp.ToLongDateString(),
+                    _result.Timestamp.ToShortTimeString());
             }
         }
 
@@ -186,6 +211,34 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             }
         }
 
+        [IgnoreDataMember]
+        public bool Busy
+        {
+            get
+            {
+                return _busy;
+            }
+            set
+            {
+                if (_busy == value)
+                    return;
+
+                _busy = value;
+
+                RaisePropertyChanged("Busy");
+                RaisePropertyChanged("BusyVisibility");
+            }
+        }
+
+        [IgnoreDataMember]
+        public Visibility BusyVisibility
+        {
+            get
+            {
+                return Busy ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
         #endregion
 
         public MainViewModel()
@@ -201,12 +254,22 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
         public void ExchangeCurrency()
         {
-            if (_busy)
+            if (Busy)
                 return;
 
-            _busy = true;
+            Busy = true;
 
-            _currencyExchangeService.ExchangeCurrency(_amount, _fromCurrency, _toCurrency, CurrencyExchanged);
+            _currencyExchangeService.ExchangeCurrency(_amount, _fromCurrency, _toCurrency, true, CurrencyExchanged, null);
+        }
+
+        public void UpdateCachedExchangeRates()
+        {
+            if (Busy)
+                return;
+
+            Busy = true;
+
+            _currencyExchangeService.UpdateCachedExchangeRates(ExchangeRatesUpdated, null);
         }
 
         public static MainViewModel Load()
@@ -221,12 +284,30 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
         private void CurrencyExchanged(ICurrencyExchangeResult result)
         {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+            InvokeOnUiThread(() =>
             {
                 Result = result;
 
-                _busy = false;
+                Busy = false;
             });
+        }
+
+        private void ExchangeRatesUpdated(object state)
+        {
+            InvokeOnUiThread(() =>
+            {
+                Busy = false;
+            });
+        }
+
+        private void InvokeOnUiThread(Action action)
+        {
+            var dispatcher = System.Windows.Deployment.Current.Dispatcher;
+
+            if (dispatcher.CheckAccess())
+                action();
+            else
+                dispatcher.BeginInvoke(action);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

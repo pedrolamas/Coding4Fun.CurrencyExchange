@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
-using System.Net;
 using System.Text.RegularExpressions;
 
 namespace Coding4Fun.CurrencyExchange.Model
@@ -82,7 +80,7 @@ namespace Coding4Fun.CurrencyExchange.Model
 
         protected override string CreateRequestUrl(double amount, ICurrency fromCurrency, ICurrency toCurrency)
         {
-            return string.Format(@"http://www.bing.com/search?q={0}+{1}+in+{2}&scope=web&mkt=en-US&FORM=W0LH",
+            return string.Format(@"http://www.bing.com/search?q={0}+{1}+in+{2}+site%3Anowhereplace.pt&scope=web&mkt=en-US&FORM=W0LH",
                 amount,
                 fromCurrency.Name.Replace(" ", "+"),
                 toCurrency.Name.Replace(" ", "+"));
