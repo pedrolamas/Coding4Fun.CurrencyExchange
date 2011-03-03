@@ -1,10 +1,8 @@
-﻿namespace Coding4Fun.CurrencyExchange.Model
+﻿namespace Coding4Fun.CurrencyExchange.Models
 {
-    public class MsnMoneyCurrency : ICurrency
+    public class MsnMoneyCurrency : CurrencyBase
     {
         #region Properties
-
-        public string Name { get; protected set; }
 
         public int Id { get; protected set; }
 

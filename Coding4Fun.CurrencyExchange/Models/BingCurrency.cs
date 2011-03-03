@@ -1,13 +1,7 @@
-﻿namespace Coding4Fun.CurrencyExchange.Model
+﻿namespace Coding4Fun.CurrencyExchange.Models
 {
-    public class BingCurrency : ICurrency
+    public class BingCurrency : CurrencyBase
     {
-        #region Properties
-
-        public string Name { get; protected set; }
-
-        #endregion
-
         public BingCurrency(string name)
         {
             Name = name;

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Coding4Fun.CurrencyExchange.Model
+namespace Coding4Fun.CurrencyExchange.Models
 {
     public class BingCurrencyExchangeService : CurrencyExchangeServiceBase
     {
@@ -70,12 +71,23 @@ namespace Coding4Fun.CurrencyExchange.Model
 
         #endregion
 
+        #region Properties
+
         public override ICurrency[] Currencies
         {
             get
             {
                 return _currencies;
             }
+        }
+
+        public override ICurrency BaseCurrency { get; protected set; }
+
+        #endregion
+
+        public BingCurrencyExchangeService()
+        {
+            BaseCurrency = Currencies.First(x => x.Name == "US Dollar");
         }
 
         protected override string CreateRequestUrl(double amount, ICurrency fromCurrency, ICurrency toCurrency)

@@ -1,18 +1,21 @@
-﻿using System;
-using System.Linq;
-using Coding4Fun.CurrencyExchange.Model;
+﻿using System.Linq;
+using Coding4Fun.CurrencyExchange.Models;
 
 namespace Coding4Fun.CurrencyExchange.ViewModels
 {
     public class FavoriteCurrenciesViewModel
     {
+        private MainViewModel _mainViewModel;
+
         #region Properties
 
         public ICurrency[] Currencies
         {
             get
             {
-                return _mainViewModel.Currencies;
+                return _mainViewModel.Currencies
+                    .Where(x => x.CachedExchangeRate != 1.0)
+                    .ToArray();
             }
         }
 
@@ -20,37 +23,24 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         {
             get
             {
-                return _mainViewModel.CachedExchangeRates
-                    .Select(x => x.Key)
-                    .ToArray();
+                return _mainViewModel.FavoriteCurrencies;
             }
             set
             {
-                var oldFavoriteCurrencies = FavoriteCurrencies;
-
-                foreach (var currency in oldFavoriteCurrencies)
-                {
-                    if (!value.Contains(currency))
-                        _mainViewModel.CachedExchangeRates.Remove(currency);
-                }
-
-                foreach (var currency in value)
-                {
-                    if (_mainViewModel.CachedExchangeRates.ContainsKey(currency))
-                        continue;
-
-                    _mainViewModel.CachedExchangeRates.Add(currency, new CachedExchangeRate(0, DateTime.MinValue));
-                }
+                _mainViewModel.FavoriteCurrencies = value;
             }
         }
 
         #endregion
 
-        private MainViewModel _mainViewModel;
-
         public FavoriteCurrenciesViewModel(MainViewModel mainViewModel)
         {
             _mainViewModel = mainViewModel;
+        }
+
+        public void Save()
+        {
+            _mainViewModel.Save();
         }
     }
 }

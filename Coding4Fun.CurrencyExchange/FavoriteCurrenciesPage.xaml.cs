@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Coding4Fun.CurrencyExchange.Model;
+using Coding4Fun.CurrencyExchange.Models;
 using Coding4Fun.CurrencyExchange.ViewModels;
 using Microsoft.Phone.Controls;
 
@@ -28,6 +28,8 @@ namespace Coding4Fun.CurrencyExchange
                 viewModel.FavoriteCurrencies = FavoriteCurrencies.SelectedItems
                     .Cast<ICurrency>()
                     .ToArray();
+
+                viewModel.Save();
             }
 
             NavigationService.GoBack();

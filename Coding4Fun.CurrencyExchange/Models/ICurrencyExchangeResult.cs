@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Coding4Fun.CurrencyExchange.Model
+namespace Coding4Fun.CurrencyExchange.Models
 {
     public interface ICurrencyExchangeResult
     {
