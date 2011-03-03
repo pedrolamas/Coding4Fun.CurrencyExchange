@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Coding4Fun.CurrencyExchange.Model
+namespace Coding4Fun.CurrencyExchange.Models
 {
     public abstract class CurrencyBase : ICurrency
     {
@@ -8,15 +8,10 @@ namespace Coding4Fun.CurrencyExchange.Model
 
         public string Name { get; protected set; }
 
-        double ExchangeRate { get; protected set; }
+        public double CachedExchangeRate { get; set; }
 
-        DateTime ExchangeRateLastUpdate { get; protected set; }
+        public DateTime CachedExchangeRateUpdatedOn { get; set; }
 
         #endregion
-
-        public CurrencyBase(string name)
-        {
-            Name = name;
-        }
     }
 }

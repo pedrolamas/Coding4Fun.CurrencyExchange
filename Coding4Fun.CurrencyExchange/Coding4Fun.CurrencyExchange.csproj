@@ -81,10 +81,11 @@
     </Compile>
     <Compile Include="Models\BingCurrency.cs" />
     <Compile Include="Models\BingCurrencyExchangeService.cs" />
-    <Compile Include="Models\CachedExchangeRate.cs" />
+    <Compile Include="Models\CachedExchangeRatesUpdateResult.cs" />
+    <Compile Include="Models\CurrencyBase.cs" />
     <Compile Include="Models\CurrencyExchangeResult.cs" />
     <Compile Include="Models\CurrencyExchangeServiceBase.cs" />
-    <Compile Include="Models\ICachedExchangeRate.cs" />
+    <Compile Include="Models\ICachedExchangeRatesUpdateResult.cs" />
     <Compile Include="Models\ICurrency.cs" />
     <Compile Include="Models\ICurrencyExchangeResult.cs" />
     <Compile Include="Models\ICurrencyExchangeService.cs" />

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 using Coding4Fun.CurrencyExchange.Helpers;
-using Coding4Fun.CurrencyExchange.Model;
+using Coding4Fun.CurrencyExchange.Models;
 
 namespace Coding4Fun.CurrencyExchange.ViewModels
 {
@@ -18,6 +17,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         private double _amount;
         private ICurrency _fromCurrency;
         private ICurrency _toCurrency;
+        private ICurrency[] _favoriteCurrencies;
         private ICurrencyExchangeResult _result;
 
         #region Properties
@@ -57,11 +57,23 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [IgnoreDataMember]
-        public Dictionary<ICurrency, ICachedExchangeRate> CachedExchangeRates
+        public ICurrency[] FavoriteCurrencies
         {
             get
             {
-                return _currencyExchangeService.CachedExchangeRates;
+                if (_favoriteCurrencies == null)
+                    return new ICurrency[] { };
+
+                return _favoriteCurrencies;
+            }
+            set
+            {
+                if (_favoriteCurrencies == value)
+                    return;
+
+                _favoriteCurrencies = value;
+
+                RaisePropertyChanged("FavoriteCurrencies");
             }
         }
 
@@ -186,7 +198,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [DataMember]
-        public int FromCurrencyIndex
+        internal int FromCurrencyIndex
         {
             get
             {
@@ -199,7 +211,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [DataMember]
-        public int ToCurrencyIndex
+        internal int ToCurrencyIndex
         {
             get
             {
@@ -208,6 +220,34 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             set
             {
                 ToCurrency = Currencies[value];
+            }
+        }
+
+        [DataMember]
+        public FavoriteCurrencyData[] FavoriteCurrenciesData
+        {
+            get
+            {
+                return FavoriteCurrencies
+                    .Select(x => new FavoriteCurrencyData()
+                    {
+                        CurrencyIndex = Array.IndexOf(Currencies, x),
+                        CachedExchangeRate = x.CachedExchangeRate,
+                        CachedExchangeRateUpdatedOn = x.CachedExchangeRateUpdatedOn
+                    })
+                    .ToArray();
+            }
+            set
+            {
+                FavoriteCurrencies = value
+                    .Select(x => Currencies[x.CurrencyIndex])
+                    .ToArray();
+
+                for (int index = 0; index < FavoriteCurrencies.Length; index++)
+                {
+                    FavoriteCurrencies[index].CachedExchangeRate = value[index].CachedExchangeRate;
+                    FavoriteCurrencies[index].CachedExchangeRateUpdatedOn = value[index].CachedExchangeRateUpdatedOn;
+                }
             }
         }
 
@@ -269,7 +309,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
             Busy = true;
 
-            _currencyExchangeService.UpdateCachedExchangeRates(ExchangeRatesUpdated, null);
+            _currencyExchangeService.UpdateCachedExchangeRates(FavoriteCurrencies, ExchangeRatesUpdated, null);
         }
 
         public static MainViewModel Load()
@@ -289,14 +329,32 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
                 Result = result;
 
                 Busy = false;
+
+                if (result.Error != null)
+                {
+                    if (System.Diagnostics.Debugger.IsAttached)
+                        System.Diagnostics.Debugger.Break();
+                    else
+                        MessageBox.Show("An error has ocorred!", "Error", MessageBoxButton.OK);
+                }
             });
         }
 
-        private void ExchangeRatesUpdated(object state)
+        private void ExchangeRatesUpdated(ICachedExchangeRatesUpdateResult result)
         {
             InvokeOnUiThread(() =>
             {
                 Busy = false;
+
+                Save();
+
+                if (result.Error != null)
+                {
+                    if (System.Diagnostics.Debugger.IsAttached)
+                        System.Diagnostics.Debugger.Break();
+                    else
+                        MessageBox.Show("An error has ocorred!", "Error", MessageBoxButton.OK);
+                }
             });
         }
 
@@ -317,5 +375,21 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #region Auxiliary Classes
+
+        public class FavoriteCurrencyData
+        {
+            [DataMember]
+            public int CurrencyIndex { get; set; }
+
+            [DataMember]
+            public double CachedExchangeRate { get; set; }
+
+            [DataMember]
+            public DateTime CachedExchangeRateUpdatedOn { get; set; }
+        }
+
+        #endregion
     }
 }

@@ -1,31 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 
-namespace Coding4Fun.CurrencyExchange.Model
+namespace Coding4Fun.CurrencyExchange.Models
 {
     public abstract class CurrencyExchangeServiceBase : ICurrencyExchangeService
     {
-        private ICurrency _baseCurrency;
-
         #region Properties
 
         public abstract ICurrency[] Currencies { get; }
 
-        public Dictionary<ICurrency, ICachedExchangeRate> CachedExchangeRates { get; set; }
+        public abstract ICurrency BaseCurrency { get; protected set; }
 
         #endregion
-
-        public CurrencyExchangeServiceBase()
-        {
-            CachedExchangeRates = new Dictionary<ICurrency, ICachedExchangeRate>();
-
-            _baseCurrency = Currencies.FirstOrDefault(x => x.Name == "US Dollar") ??
-                Currencies.FirstOrDefault(x => x.Name == "Euro") ??
-                Currencies[0];
-        }
 
         protected abstract string CreateRequestUrl(double amount, ICurrency fromCurrency, ICurrency toCurrency);
 
@@ -35,32 +23,24 @@ namespace Coding4Fun.CurrencyExchange.Model
         {
             if (useCachedExchangeRates)
             {
-                var fromExchangeRate = 0.0;
-                var toExchangeRate = 0.0;
+                var fromExchangeRate = fromCurrency.CachedExchangeRate;
+                var toExchangeRate = toCurrency.CachedExchangeRate;
                 var timestamp = DateTime.Now;
 
-                if (fromCurrency == _baseCurrency)
-                    fromExchangeRate = 1;
-                else if (CachedExchangeRates.ContainsKey(fromCurrency))
+                if (fromCurrency == BaseCurrency)
+                    fromExchangeRate = 1.0;
+                else
                 {
-                    var fromCachedExchangeRate = CachedExchangeRates[fromCurrency];
-
-                    fromExchangeRate = fromCachedExchangeRate.ExchangeRate;
-
-                    if (timestamp > fromCachedExchangeRate.LastUpdate)
-                        timestamp = fromCachedExchangeRate.LastUpdate;
+                    if (timestamp > fromCurrency.CachedExchangeRateUpdatedOn)
+                        timestamp = fromCurrency.CachedExchangeRateUpdatedOn;
                 }
 
-                if (toCurrency == _baseCurrency)
-                    toExchangeRate = 1;
-                else if (CachedExchangeRates.ContainsKey(toCurrency))
+                if (toCurrency == BaseCurrency)
+                    toExchangeRate = 1.0;
+                else
                 {
-                    var toCachedExchangeRate = CachedExchangeRates[toCurrency];
-
-                    toExchangeRate = toCachedExchangeRate.ExchangeRate;
-
-                    if (timestamp > toCachedExchangeRate.LastUpdate)
-                        timestamp = toCachedExchangeRate.LastUpdate;
+                    if (timestamp > toCurrency.CachedExchangeRateUpdatedOn)
+                        timestamp = toCurrency.CachedExchangeRateUpdatedOn;
                 }
 
                 if (fromExchangeRate > 0 && toExchangeRate > 0)
@@ -110,20 +90,26 @@ namespace Coding4Fun.CurrencyExchange.Model
             }, state);
         }
 
-        public void UpdateCachedExchangeRates(Action<object> callback, object state)
+        public void UpdateCachedExchangeRates(IEnumerable<ICurrency> currencies, Action<CachedExchangeRatesUpdateResult> callback, object state)
         {
-            UpdateNextCachedExchangeRate(new UpdateCachedExchangeRatesState(callback, state, CachedExchangeRates.Keys));
+            UpdateNextCachedExchangeRate(new UpdateCachedExchangeRatesState(callback, state, currencies.GetEnumerator()));
         }
 
         private void UpdateNextCachedExchangeRate(UpdateCachedExchangeRatesState updateCachedExchangeRatesState)
         {
-            if (updateCachedExchangeRatesState.CurrenciesStack.Count == 0)
-                updateCachedExchangeRatesState.Callback(updateCachedExchangeRatesState.UserState);
+            var currenciesEnumerator = updateCachedExchangeRatesState.CurrenciesEnumerator;
+
+            if (!currenciesEnumerator.MoveNext())
+            {
+                currenciesEnumerator.Dispose();
+
+                updateCachedExchangeRatesState.Callback(new CachedExchangeRatesUpdateResult(updateCachedExchangeRatesState.UserState));
+            }
             else
             {
-                var currency = updateCachedExchangeRatesState.CurrenciesStack.Pop();
+                var currency = currenciesEnumerator.Current;
 
-                ExchangeCurrency(1, _baseCurrency, currency, false, UpdateCachedExchangeRate, updateCachedExchangeRatesState);
+                ExchangeCurrency(1, BaseCurrency, currency, false, UpdateCachedExchangeRate, updateCachedExchangeRatesState);
             }
         }
 
@@ -131,29 +117,41 @@ namespace Coding4Fun.CurrencyExchange.Model
         {
             var updateCachedExchangeRatesState = (UpdateCachedExchangeRatesState)result.State;
 
-            CachedExchangeRates[result.ExchangedCurrency] = new CachedExchangeRate(result.ExchangedAmount, result.Timestamp);
+            if (result.Error != null)
+            {
+                updateCachedExchangeRatesState.CurrenciesEnumerator.Dispose();
+
+                updateCachedExchangeRatesState.Callback(new CachedExchangeRatesUpdateResult(result.Error, updateCachedExchangeRatesState.UserState));
+            }
+
+            result.ExchangedCurrency.CachedExchangeRate = result.ExchangedAmount;
+            result.ExchangedCurrency.CachedExchangeRateUpdatedOn = result.Timestamp;
 
             UpdateNextCachedExchangeRate(updateCachedExchangeRatesState);
         }
+
+        #region Auxiliary Classes
 
         private class UpdateCachedExchangeRatesState
         {
             #region Properties
 
-            public Action<object> Callback { get; private set; }
+            public Action<CachedExchangeRatesUpdateResult> Callback { get; private set; }
 
             public object UserState { get; set; }
 
-            public Stack<ICurrency> CurrenciesStack { get; set; }
+            public IEnumerator<ICurrency> CurrenciesEnumerator { get; set; }
 
             #endregion
 
-            public UpdateCachedExchangeRatesState(Action<object> callback, object userState, IEnumerable<ICurrency> currencies)
+            public UpdateCachedExchangeRatesState(Action<CachedExchangeRatesUpdateResult> callback, object userState, IEnumerator<ICurrency> currenciesEnumerator)
             {
                 Callback = callback;
                 UserState = userState;
-                CurrenciesStack = new Stack<ICurrency>(currencies);
+                CurrenciesEnumerator = currenciesEnumerator;
             }
         }
+
+        #endregion
     }
 }
