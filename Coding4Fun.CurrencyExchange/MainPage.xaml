@@ -58,7 +58,7 @@
             <StackPanel>
                 <TextBlock Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="{Binding ExchangedCurrency}"></TextBlock>
                 <TextBlock Margin="25, 0, 0, 0" Style="{StaticResource PhoneTextTitle1Style}" Text="{Binding ExchangedAmount}"></TextBlock>
-                <TextBlock Style="{StaticResource PhoneTextSubtleStyle}" Text="{Binding ExchangedTimeStamp}" TextWrapping="Wrap"></TextBlock>
+                <TextBlock Style="{StaticResource PhoneTextSubtleStyle}" Text="{Binding ExchangedTimeStamp}" TextWrapping="Wrap" TextAlignment="Right"></TextBlock>
             </StackPanel>
         </StackPanel>
         <C4F:ProgressOverlay
