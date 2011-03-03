@@ -13,7 +13,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         private const string SettingFileName = "mainviewmodel.dat";
 
         private ICurrencyExchangeService _currencyExchangeService;
-        private bool _busy = false;
+        private string _busyMessage = null;
         private double _amount;
         private ICurrency _fromCurrency;
         private ICurrency _toCurrency;
@@ -164,7 +164,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         {
             get
             {
-                if (_result == null)
+                if (_result == null || _result.ExchangedCurrency == null)
                     return string.Empty;
 
                 return _result.ExchangedCurrency.Name;
@@ -198,7 +198,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [DataMember]
-        internal int FromCurrencyIndex
+        public int FromCurrencyIndex
         {
             get
             {
@@ -211,7 +211,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [DataMember]
-        internal int ToCurrencyIndex
+        public int ToCurrencyIndex
         {
             get
             {
@@ -256,16 +256,25 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         {
             get
             {
-                return _busy;
+                return !string.IsNullOrEmpty(BusyMessage);
+            }
+        }
+
+        [IgnoreDataMember]
+        public string BusyMessage
+        {
+            get
+            {
+                return _busyMessage;
             }
             set
             {
-                if (_busy == value)
+                if (_busyMessage == value)
                     return;
 
-                _busy = value;
+                _busyMessage = value;
 
-                RaisePropertyChanged("Busy");
+                RaisePropertyChanged("BusyMessage");
                 RaisePropertyChanged("BusyVisibility");
             }
         }
@@ -297,7 +306,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             if (Busy)
                 return;
 
-            Busy = true;
+            BusyMessage = "Exchanging amount...";
 
             _currencyExchangeService.ExchangeCurrency(_amount, _fromCurrency, _toCurrency, true, CurrencyExchanged, null);
         }
@@ -307,7 +316,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             if (Busy)
                 return;
 
-            Busy = true;
+            BusyMessage = "Updating cached exchange rates...";
 
             _currencyExchangeService.UpdateCachedExchangeRates(FavoriteCurrencies, ExchangeRatesUpdated, null);
         }
@@ -328,7 +337,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             {
                 Result = result;
 
-                Busy = false;
+                BusyMessage = null;
 
                 if (result.Error != null)
                 {
@@ -344,7 +353,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         {
             InvokeOnUiThread(() =>
             {
-                Busy = false;
+                BusyMessage = null;
 
                 Save();
 
