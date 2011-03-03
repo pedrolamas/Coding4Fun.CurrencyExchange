@@ -292,7 +292,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
         public MainViewModel()
         {
-            CurrencyExchangeService = new BingCurrencyExchangeService();
+            CurrencyExchangeService = new MsnMoneyCurrencyExchangeService();
             Amount = "100";
         }
 
