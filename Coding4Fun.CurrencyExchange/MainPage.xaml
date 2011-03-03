@@ -65,7 +65,7 @@
             Grid.Row="2"
             Visibility="{Binding BusyVisibility}">
             <C4F:ProgressOverlay.Content>
-                <TextBlock>Loading</TextBlock>
+                <TextBlock Text="{Binding BusyMessage}" />
             </C4F:ProgressOverlay.Content>
         </C4F:ProgressOverlay>
     </Grid>
