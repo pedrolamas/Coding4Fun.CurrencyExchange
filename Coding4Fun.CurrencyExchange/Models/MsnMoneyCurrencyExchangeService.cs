@@ -9,7 +9,7 @@ namespace Coding4Fun.CurrencyExchange.Models
     {
         #region Static Globals
 
-        private static Regex _resultRegex = new Regex("<td class=\"ars s4\">(?<value>[0-9.,]+).*?</td>");
+        private static Regex _resultRegex = new Regex("<td>Results:.*?(?<value>[0-9.,]+).*?</td>");
 
         private static ICurrency[] _currencies = new ICurrency[] { 
             new MsnMoneyCurrency("Algerian Dinar", 48),
