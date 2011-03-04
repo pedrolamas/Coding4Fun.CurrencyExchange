@@ -75,7 +75,6 @@
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.money.usd.png" Text="Exchange" Click="ExchangeIconButton_Click" />
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="favorite currencies..." Click="EditFavoriteCurrenciesMenuItem_Click" />
                 <shell:ApplicationBarMenuItem Text="update exchange rates" Click="UpdateExchangeRatesMenuItem_Click" />
                 <shell:ApplicationBarMenuItem Text="about" Click="AboutMenuItem_Click" />
             </shell:ApplicationBar.MenuItems>

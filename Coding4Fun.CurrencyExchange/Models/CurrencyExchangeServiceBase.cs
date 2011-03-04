@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace Coding4Fun.CurrencyExchange.Models
@@ -90,9 +91,9 @@ namespace Coding4Fun.CurrencyExchange.Models
             }, state);
         }
 
-        public void UpdateCachedExchangeRates(IEnumerable<ICurrency> currencies, Action<CachedExchangeRatesUpdateResult> callback, object state)
+        public void UpdateCachedExchangeRates(Action<CachedExchangeRatesUpdateResult> callback, object state)
         {
-            UpdateNextCachedExchangeRate(new UpdateCachedExchangeRatesState(callback, state, currencies.GetEnumerator()));
+            UpdateNextCachedExchangeRate(new UpdateCachedExchangeRatesState(callback, state, Currencies.Cast<ICurrency>().GetEnumerator()));
         }
 
         private void UpdateNextCachedExchangeRate(UpdateCachedExchangeRatesState updateCachedExchangeRatesState)
