@@ -17,7 +17,6 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         private double _amount;
         private ICurrency _fromCurrency;
         private ICurrency _toCurrency;
-        private ICurrency[] _favoriteCurrencies;
         private ICurrencyExchangeResult _result;
 
         #region Properties
@@ -53,27 +52,6 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             get
             {
                 return _currencyExchangeService.Currencies;
-            }
-        }
-
-        [IgnoreDataMember]
-        public ICurrency[] FavoriteCurrencies
-        {
-            get
-            {
-                if (_favoriteCurrencies == null)
-                    return new ICurrency[] { };
-
-                return _favoriteCurrencies;
-            }
-            set
-            {
-                if (_favoriteCurrencies == value)
-                    return;
-
-                _favoriteCurrencies = value;
-
-                RaisePropertyChanged("FavoriteCurrencies");
             }
         }
 
@@ -224,12 +202,12 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [DataMember]
-        public FavoriteCurrencyData[] FavoriteCurrenciesData
+        public CurrencyCachedExchangeRate[] CurrenciesCachedExchangeRate
         {
             get
             {
-                return FavoriteCurrencies
-                    .Select(x => new FavoriteCurrencyData()
+                return Currencies
+                    .Select(x => new CurrencyCachedExchangeRate()
                     {
                         CurrencyIndex = Array.IndexOf(Currencies, x),
                         CachedExchangeRate = x.CachedExchangeRate,
@@ -239,14 +217,15 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             }
             set
             {
-                FavoriteCurrencies = value
-                    .Select(x => Currencies[x.CurrencyIndex])
-                    .ToArray();
-
-                for (int index = 0; index < FavoriteCurrencies.Length; index++)
+                foreach (var currencyData in value)
                 {
-                    FavoriteCurrencies[index].CachedExchangeRate = value[index].CachedExchangeRate;
-                    FavoriteCurrencies[index].CachedExchangeRateUpdatedOn = value[index].CachedExchangeRateUpdatedOn;
+                    if (currencyData.CurrencyIndex >= Currencies.Length)
+                        continue;
+
+                    var currency = Currencies[currencyData.CurrencyIndex];
+
+                    currency.CachedExchangeRate = currencyData.CachedExchangeRate;
+                    currency.CachedExchangeRateUpdatedOn = currencyData.CachedExchangeRateUpdatedOn;
                 }
             }
         }
@@ -292,7 +271,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
         public MainViewModel()
         {
-            CurrencyExchangeService = new MsnMoneyCurrencyExchangeService();
+            CurrencyExchangeService = new MsnMoneyV2CurrencyExchangeService();
             Amount = "100";
         }
 
@@ -318,7 +297,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
             BusyMessage = "Updating cached exchange rates...";
 
-            _currencyExchangeService.UpdateCachedExchangeRates(FavoriteCurrencies, ExchangeRatesUpdated, null);
+            _currencyExchangeService.UpdateCachedExchangeRates(ExchangeRatesUpdated, null);
         }
 
         public static MainViewModel Load()
@@ -387,7 +366,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
 
         #region Auxiliary Classes
 
-        public class FavoriteCurrencyData
+        public class CurrencyCachedExchangeRate
         {
             [DataMember]
             public int CurrencyIndex { get; set; }

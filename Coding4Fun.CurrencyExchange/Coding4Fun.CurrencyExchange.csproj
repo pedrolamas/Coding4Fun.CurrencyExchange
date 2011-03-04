@@ -70,9 +70,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FavoriteCurrenciesPage.xaml.cs">
-      <DependentUpon>FavoriteCurrenciesPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\AutoSelect.cs" />
     <Compile Include="Helpers\MultiselectorHelper.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
@@ -82,6 +79,7 @@
     <Compile Include="Models\BingCurrency.cs" />
     <Compile Include="Models\BingCurrencyExchangeService.cs" />
     <Compile Include="Models\CachedExchangeRatesUpdateResult.cs" />
+    <Compile Include="Models\MsnMoneyV2CurrencyExchangeService.cs" />
     <Compile Include="Models\CurrencyBase.cs" />
     <Compile Include="Models\CurrencyExchangeResult.cs" />
     <Compile Include="Models\CurrencyExchangeServiceBase.cs" />
@@ -92,7 +90,6 @@
     <Compile Include="Models\MsnMoneyCurrency.cs" />
     <Compile Include="Models\MsnMoneyCurrencyExchangeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\FavoriteCurrenciesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -100,10 +97,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="FavoriteCurrenciesPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -49,11 +49,6 @@ namespace Coding4Fun.CurrencyExchange
             });
         }
 
-        private void EditFavoriteCurrenciesMenuItem_Click(object sender, EventArgs e)
-        {
-            NavigationService.Navigate(new Uri("/FavoriteCurrenciesPage.xaml", UriKind.Relative));
-        }
-
         private void UpdateExchangeRatesMenuItem_Click(object sender, EventArgs e)
         {
             var viewModel = DataContext as MainViewModel;
