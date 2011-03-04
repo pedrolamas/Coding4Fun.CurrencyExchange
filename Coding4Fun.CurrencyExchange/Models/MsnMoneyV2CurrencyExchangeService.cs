@@ -182,13 +182,17 @@ namespace Coding4Fun.CurrencyExchange.Models
 
                         foreach (var match in _resultRegex.Matches(responseContent).Cast<Match>())
                         {
-                            var currency = Currencies.FirstOrDefault(x => x.Name == match.Groups["currency"].Value);
+                            var currencyName = match.Groups["currency"].Value.Trim();
+
+                            var currency = Currencies.FirstOrDefault(x => string.Compare(x.Name, currencyName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
                             if (currency != null)
                             {
                                 currency.CachedExchangeRate = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
                                 currency.CachedExchangeRateUpdatedOn = DateTime.Now;
                             }
+                            else
+                                currency = null;
                         }
 
                         callback(new CachedExchangeRatesUpdateResult(ar.AsyncState));
