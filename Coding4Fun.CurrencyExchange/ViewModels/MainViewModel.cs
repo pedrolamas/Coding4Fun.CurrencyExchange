@@ -169,8 +169,8 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
                 if (_result == null)
                     return string.Empty;
 
-                return string.Format("Data freshness:\n{0}, at {1}",
-                    _result.Timestamp.ToLongDateString(),
+                return string.Format("Data freshness:\n{0} at {1}",
+                    _result.Timestamp.ToShortDateString(),
                     _result.Timestamp.ToShortTimeString());
             }
         }
