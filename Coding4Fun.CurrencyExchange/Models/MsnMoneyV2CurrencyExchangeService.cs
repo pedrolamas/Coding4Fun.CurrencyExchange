@@ -191,8 +191,6 @@ namespace Coding4Fun.CurrencyExchange.Models
                                 currency.CachedExchangeRate = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
                                 currency.CachedExchangeRateUpdatedOn = DateTime.Now;
                             }
-                            else
-                                currency = null;
                         }
 
                         callback(new CachedExchangeRatesUpdateResult(ar.AsyncState));
