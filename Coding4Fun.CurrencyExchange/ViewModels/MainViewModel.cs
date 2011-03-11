@@ -202,7 +202,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
         }
 
         [DataMember]
-        public CurrencyCachedExchangeRate[] CurrenciesCachedExchangeRate
+        public CurrencyCachedExchangeRate[] CurrenciesCachedExchangeRates
         {
             get
             {
