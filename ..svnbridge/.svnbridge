@@ -2,4 +2,6 @@
 *.suo
 *.user
 </Value></Property><Property><Name>svn:ignore</Name><Value>*.suo
+_ReSharper.Coding4Fun.CurrencyExchange
+Coding4Fun.CurrencyExchange.5.1.ReSharper.user
 </Value></Property></Properties></ItemProperties>
