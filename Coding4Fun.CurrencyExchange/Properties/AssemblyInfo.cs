@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Currency Exchange")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Coding4Fun")]
+[assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Coding4Fun Currency Exchange")]
-[assembly: AssemblyCopyright("Copyright ©2010 Pedro Lamas")]
+[assembly: AssemblyCopyright("Copyright ©2010 Microsoft")]
 [assembly: AssemblyTrademark("Coding4Fun")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.4.0")]
+[assembly: AssemblyFileVersion("1.4.0")]
