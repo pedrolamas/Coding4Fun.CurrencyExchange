@@ -49,7 +49,7 @@ namespace Coding4Fun.CurrencyExchange
             });
         }
 
-        private void SwitchCurrenciesIconButton_Click(object sender, EventArgs e)
+        private void SwapCurrenciesIconButton_Click(object sender, EventArgs e)
         {
             var viewModel = DataContext as MainViewModel;
 
@@ -58,7 +58,7 @@ namespace Coding4Fun.CurrencyExchange
 
             Dispatcher.BeginInvoke(() =>
             {
-                viewModel.SwitchCurrencies();
+                viewModel.SwapCurrencies();
             });
         }
 
