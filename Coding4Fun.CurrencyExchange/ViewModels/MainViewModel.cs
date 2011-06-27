@@ -290,7 +290,7 @@ namespace Coding4Fun.CurrencyExchange.ViewModels
             _currencyExchangeService.ExchangeCurrency(_amount, _fromCurrency, _toCurrency, true, CurrencyExchanged, null);
         }
 
-        public void SwitchCurrencies()
+        public void SwapCurrencies()
         {
             if (Busy)
                 return;
