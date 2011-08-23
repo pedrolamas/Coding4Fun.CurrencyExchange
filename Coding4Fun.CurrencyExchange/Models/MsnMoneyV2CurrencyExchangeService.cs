@@ -3,23 +3,25 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Coding4Fun.CurrencyExchange.Models
 {
     public class MsnMoneyV2CurrencyExchangeService : ICurrencyExchangeService
     {
-        private const string MsnMoneyUrl = "http://moneycentral.msn.com/investor/market/exchangerates.aspx?selRegion=1&selCurrency=1";
+        private const string MsnMoneyUrl = "http://investing.money.msn.com/investments/exchange-rates";
+        private const string MsnMoneyPostData = "regiondropdown=1&comparecurrencydropdown=USD";
 
         #region Static Globals
 
-        private static Regex _resultRegex = new Regex(@"<tr><td>(?<currency>[^<>]+)</td><td style=""text-align:right"">.*?>(?<value>[0-9.,]+)</a></td></tr>");
+        private static Regex _resultRegex = new Regex(@"<tr><td.*?(?<currency>[^<>]+)</a></td>.*?<td class=""currratesper"">(?<value>[0-9.,]+)</td></tr>");
 
         private static ICurrency[] _currencies = new ICurrency[] { 
             new MsnMoneyCurrency("Algerian Dinar", 48),
             new MsnMoneyCurrency("Argentine Peso", 10),
             new MsnMoneyCurrency("Australian Dollar", 8),
-            new MsnMoneyCurrency("Baharaini Dinar", 57),
+            new MsnMoneyCurrency("Bahraini Dinar", 57),
             new MsnMoneyCurrency("Bolivian Boliviano", 13),
             new MsnMoneyCurrency("Brazilian Real", 14),
             new MsnMoneyCurrency("British Pound", 3),
@@ -27,7 +29,7 @@ namespace Coding4Fun.CurrencyExchange.Models
             new MsnMoneyCurrency("Canadian Dollar", 2),
             new MsnMoneyCurrency("Chilean Peso", 16),
             new MsnMoneyCurrency("Chinese Yuan", 17),
-            new MsnMoneyCurrency("Colombian Peso", 18),
+            new MsnMoneyCurrency("Columbian Peso", 18),
             new MsnMoneyCurrency("Czech Koruna", 19),
             new MsnMoneyCurrency("Danish Krone", 20),
             new MsnMoneyCurrency("Egyptian Pound", 92),
@@ -36,12 +38,12 @@ namespace Coding4Fun.CurrencyExchange.Models
             new MsnMoneyCurrency("Guatemalan Quetzal", 45),
             new MsnMoneyCurrency("Hong Kong Dollar", 24),
             new MsnMoneyCurrency("Hungarian Forint", 25),
-            new MsnMoneyCurrency("new Israeli shekel", 50),
+            new MsnMoneyCurrency("Israeli New Shekel", 50),
             new MsnMoneyCurrency("Indian Rupee", 59),
             new MsnMoneyCurrency("Indonesian Rupiah", 26),
             new MsnMoneyCurrency("Japanese Yen", 7),
             new MsnMoneyCurrency("Jordanian Dinar", 60),
-            new MsnMoneyCurrency("Kenyan Shilling", 54),
+            new MsnMoneyCurrency("Kenyan Schilling", 54),
             new MsnMoneyCurrency("Korean Won", 28),
             new MsnMoneyCurrency("Kuwaiti Dinar", 61),
             new MsnMoneyCurrency("Malaysian Ringgit", 51),
@@ -50,27 +52,27 @@ namespace Coding4Fun.CurrencyExchange.Models
             new MsnMoneyCurrency("Namibian Dollar", 55),
             new MsnMoneyCurrency("New Zealand Dollar", 32),
             new MsnMoneyCurrency("Norwegian Krone", 33),
-            new MsnMoneyCurrency("Omani Rial", 63),
-            new MsnMoneyCurrency("Pakistan Rupee", 64),
+            new MsnMoneyCurrency("Oman Riyal", 63),
+            new MsnMoneyCurrency("Pakistani Rupee", 64),
             new MsnMoneyCurrency("Peruvian Nuevo Sol", 34),
             new MsnMoneyCurrency("Philippine Peso", 65),
-            new MsnMoneyCurrency("Qatari Rial", 66),
-            new MsnMoneyCurrency("Russian Rouble", 37),
-            new MsnMoneyCurrency("Saudi Riyal", 67),
+            new MsnMoneyCurrency("Qatari Riyal", 66),
+            new MsnMoneyCurrency("Russian Ruble", 37),
+            new MsnMoneyCurrency("Saudi Arabian Riyal", 67),
             new MsnMoneyCurrency("Singapore Dollar", 40),
             new MsnMoneyCurrency("South African Rand", 44),
             new MsnMoneyCurrency("Swedish Krona", 39),
             new MsnMoneyCurrency("Swiss Franc", 15),
             new MsnMoneyCurrency("Taiwan Dollar", 42),
-            new MsnMoneyCurrency("Tanzanian Shilling", 68),
+            new MsnMoneyCurrency("Tanzanian Schilling", 68),
             new MsnMoneyCurrency("Thai Baht", 41),
             new MsnMoneyCurrency("Tunisian Dinar", 47),
             new MsnMoneyCurrency("Turkish Lira", 49),
-            new MsnMoneyCurrency("Emirati Dirham", 69),
+            new MsnMoneyCurrency("UAE Dirham", 69),
             new MsnMoneyCurrency("US Dollar", 1),
-            new MsnMoneyCurrency("Venezualan Bolivar", 43),
+            new MsnMoneyCurrency("Venezuelan Bolivar", 43),
             new MsnMoneyCurrency("Vietnamese Dong", 70),
-            new MsnMoneyCurrency("Zimbabwe Dollar", 56),
+            new MsnMoneyCurrency("Zimbabwean Dollar", 56),
         };
 
         #endregion
@@ -163,50 +165,63 @@ namespace Coding4Fun.CurrencyExchange.Models
 
         public void UpdateCachedExchangeRates(Action<CachedExchangeRatesUpdateResult> callback, object state)
         {
-            var request = HttpWebRequest.Create(MsnMoneyUrl);
+            var request = (HttpWebRequest)HttpWebRequest.Create(MsnMoneyUrl);
+            var data = Encoding.UTF8.GetBytes(MsnMoneyPostData);
 
-            request.BeginGetResponse(ar =>
+            request.Method = "POST";
+            request.ContentType = "application/x-www-form-urlencoded";
+
+            request.BeginGetRequestStream(ar2 =>
             {
-                try
+                var requestStream = request.EndGetRequestStream(ar2);
+
+                requestStream.Write(data, 0, data.Length);
+                requestStream.Close();
+
+                request.BeginGetResponse(ar =>
                 {
-                    var response = (HttpWebResponse)request.EndGetResponse(ar);
-
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    try
                     {
-                        string responseContent;
+                        var response = (HttpWebResponse)request.EndGetResponse(ar);
 
-                        using (var streamReader = new StreamReader(response.GetResponseStream()))
+                        if (response.StatusCode == HttpStatusCode.OK)
                         {
-                            responseContent = streamReader.ReadToEnd();
-                        }
+                            string responseContent;
 
-                        foreach (var match in _resultRegex.Matches(responseContent).Cast<Match>())
-                        {
-                            var currencyName = match.Groups["currency"].Value.Trim();
-
-                            var currency = Currencies.FirstOrDefault(x => string.Compare(x.Name, currencyName, StringComparison.InvariantCultureIgnoreCase) == 0);
-
-                            if (currency != null)
+                            using (var streamReader = new StreamReader(response.GetResponseStream()))
                             {
-                                currency.CachedExchangeRate = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
-                                currency.CachedExchangeRateUpdatedOn = DateTime.Now;
+                                responseContent = streamReader.ReadToEnd();
                             }
-                        }
 
-                        callback(new CachedExchangeRatesUpdateResult(ar.AsyncState));
+                            foreach (var match in _resultRegex.Matches(responseContent).Cast<Match>())
+                            {
+                                var currencyName = match.Groups["currency"].Value.Trim();
+
+                                var currency = Currencies.FirstOrDefault(x => string.Compare(x.Name, currencyName, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+                                if (currency != null)
+                                {
+                                    currency.CachedExchangeRate = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
+                                    currency.CachedExchangeRateUpdatedOn = DateTime.Now;
+                                }
+                            }
+
+                            callback(new CachedExchangeRatesUpdateResult(ar.AsyncState));
+                        }
+                        else
+                        {
+                            throw new Exception(string.Format("Http Error: ({0}) {1}",
+                                response.StatusCode,
+                                response.StatusDescription));
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        throw new Exception(string.Format("Http Error: ({0}) {1}",
-                            response.StatusCode,
-                            response.StatusDescription));
+                        callback(new CachedExchangeRatesUpdateResult(ex, ar.AsyncState));
                     }
-                }
-                catch (Exception ex)
-                {
-                    callback(new CachedExchangeRatesUpdateResult(ex, ar.AsyncState));
-                }
-            }, state);
+                }, state);
+
+            }, null);
         }
     }
 }
